@@ -19,7 +19,6 @@ include anaconda
 anaconda::env{test1:
     anaconda_version => "1.4",
     python           => "3.3",
-    numpy            => "1.7",
 }
 
 # Create env named test2 - /opt/anaconda/envs/test2
@@ -40,19 +39,42 @@ anaconda::package{[dnspython,rope, py]:
 }
 
 ```
-
 Run using this command where --modulepath points to the directory where you have installed this puppet module:
 ```
 puppet apply modules/anaconda/test2.pp --modulepath=modules
 ```
 
+### Install R kernel
+```puppet
+
+  $conda_r_installs = [ 
+                'r', 'r-essentials', 'r-irkernel', 
+                'bokeh', 'ggplot', 'ggplot2',
+                'r-matrix', 'r-nlme', 'r-lme4',
+                'dplyr', 'shiny',
+                'tidyr', 'caret', 'nnet'
+                ]
+                
+  anaconda::env { r:
+    anaconda_version => '4.4',
+    language         => 'r'
+  } ->
+
+  anaconda::package { $conda_r_installs:
+    env      => 'r',
+    language => 'r'
+  }
+```
 ### Anaconda class
 This class simply installs Anaconda into /opt/anaconda and accepts the license agreement.  The path is
 hardcoded for now.
 
 ### anaconda::env
 
-Create a Python environment.  Overriding the anaconda_version, numpy, or python version will create the env 
+```
+define anaconda::env( $anaconda_version='1.5', $python='2.7')
+```
+Create a Python environment.  Overriding the anaconda_version, or python version will create the env 
 with the appropriate versions.
 
 #### Parameters
